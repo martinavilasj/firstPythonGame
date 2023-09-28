@@ -53,8 +53,9 @@ display = pygame.display.set_mode((width,height))
 ## IMPORTANTE siempre iniciar pygame antes de llamar cualquier función de este ##
 pygame.init()
 
-def start():
-    #display = pygame.display.set_mode((width,height))
+def start(playerColor):
+
+
     bk1 = bk.Background(fondoImagen,playerVelocidad,fondoPosVertical,fondoColor,display)
     s1 = sounds.Sound(sonidoDisparoPlayer,sonidoDisparoEnemigo,"","","","")
     p1 = ply.Player(playerVelMovimiento,playerVelDisparo,0,playerVidas,playerColor,width,height,bk1,s1)
@@ -68,10 +69,10 @@ def start():
     #
     #
     clock = pygame.time.Clock()
-    second = 1
-    cont = 1
-    contS = 1
-    contL = 1
+    second = round(pygame.time.get_ticks()/1000)
+   # cont = 1
+    #contS = 1
+    contL = second
     #
     #
 
@@ -94,7 +95,7 @@ def start():
             #print(str(contL))
         #
         #
-        
+
         if p1.lifes <= 0:
             inGame = False
             p1.velX = 0
@@ -190,29 +191,72 @@ def start():
         
         event.evtShootingPlayer(p1,listEnemies,listAsteroids)
 
-        pygame.display.update()    
+        pygame.display.update()   
+
+def select_player():
+    run = True
+    bk_select_menu = bk.Background(fondoImagen,playerVelocidad,fondoPosVertical,fondoColor,display)
+
+    list_players = [
+        btn.Button(width*0.2,height/3,"playerRed",display),
+        btn.Button(width*0.4,height/3,"playerBlue",display),
+        btn.Button(width*0.6,height/3,"playerGreen",display),
+        btn.Button(width*0.8,height/3,"playerOrange",display)
+    ]
+
+    start_button = btn.Button(width/2,height*0.8,"start",display)
+    
+
+    for player in list_players:
+        player.set_radio_buttons(list_players)
+    list_players[0].clicked = True
+
+    while run:
+        bk_select_menu.drawBackground()
+        bk_select_menu.drawText(fuenteTexto,"Selecciona una nave",35,width/2,height*0.55)
+
+        for player in list_players:
+            player.draw_image_button("resources/players/")
+            player.update_select()
+            if player.clicked:
+                playerColor = player.name.replace('player','')
+        
+        if start_button.draw_text_button("START",fuenteTexto,40):
+            print("La nave seleccionada fue: "+playerColor)
+            run = False
+            start(playerColor)
+        for evt in pygame.event.get():
+            # Cerrar ventana cuando el usuario clickee sobre la X
+            if evt.type == QUIT:
+                pygame.quit()
+                sys.exit()
+        # Refrescar pantalla
+        pygame.display.update()
+
 
 def main_menu():
+    run = True
     # Fondo del menu, igual que en el juego pero sin movimiento
     bk_menu = bk.Background(fondoImagen,playerVelocidad,fondoPosVertical,fondoColor,display)
 
     # Definiendo botones
-    start_button = btn.Button(width/2,height*0.4,display)
-    quit_button = btn.Button(width/2,height*0.5,display)
+    start_button = btn.Button(width/2,height*0.4,"start",display)
+    quit_button = btn.Button(width/2,height*0.55,"quit",display)
 
     # Título de la ventana
     pygame.display.set_caption("Menu principal")
 
-    while True:
+    while run:
         # Dibujar fondo
         bk_menu.drawBackground()
 
         # Dibujar titulo del juego
-        bk_menu.drawText(fuenteTexto,"Mein Teil",70,width/2,height*0.2)
+        bk_menu.drawText(fuenteTexto,"JUEGUITO",70,width/2,height*0.2)
 
         # Dibujar botones
         if start_button.draw_text_button("START",fuenteTexto,40):
-            start()
+            run = False
+            select_player()
         if quit_button.draw_text_button("QUIT",fuenteTexto,40):
             pygame.quit()
             sys.exit()
