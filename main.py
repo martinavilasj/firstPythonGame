@@ -13,6 +13,7 @@ import sounds
 import level as lvl
 from pygame.locals import *
 from random import *
+import button as btn
 
 # Variables Globales
 width = 800
@@ -46,11 +47,14 @@ asteroideVidas = 1
 sonidoDisparoPlayer = "resources/players/shoot.ogg"
 sonidoDisparoEnemigo = "resources/enemies/shootEn.ogg"
 
+# Sacando la variable display fuera de la función start
+display = pygame.display.set_mode((width,height))
+
 ## IMPORTANTE siempre iniciar pygame antes de llamar cualquier función de este ##
 pygame.init()
 
 def start():
-    display = pygame.display.set_mode((width,height))
+    #display = pygame.display.set_mode((width,height))
     bk1 = bk.Background(fondoImagen,playerVelocidad,fondoPosVertical,fondoColor,display)
     s1 = sounds.Sound(sonidoDisparoPlayer,sonidoDisparoEnemigo,"","","","")
     p1 = ply.Player(playerVelMovimiento,playerVelDisparo,0,playerVidas,playerColor,width,height,bk1,s1)
@@ -188,5 +192,39 @@ def start():
 
         pygame.display.update()    
 
+def main_menu():
+    # Fondo del menu, igual que en el juego pero sin movimiento
+    bk_menu = bk.Background(fondoImagen,playerVelocidad,fondoPosVertical,fondoColor,display)
 
-start()
+    # Definiendo botones
+    start_button = btn.Button(width/2,height*0.4,display)
+    quit_button = btn.Button(width/2,height*0.5,display)
+
+    # Título de la ventana
+    pygame.display.set_caption("Menu principal")
+
+    while True:
+        # Dibujar fondo
+        bk_menu.drawBackground()
+
+        # Dibujar titulo del juego
+        bk_menu.drawText(fuenteTexto,"Mein Teil",70,width/2,height*0.2)
+
+        # Dibujar botones
+        if start_button.draw_text_button("START",fuenteTexto,40):
+            start()
+        if quit_button.draw_text_button("QUIT",fuenteTexto,40):
+            pygame.quit()
+            sys.exit()
+        
+        for evt in pygame.event.get():
+            # Cerrar ventana cuando el usuario clickee sobre la X
+            if evt.type == QUIT:
+                pygame.quit()
+                sys.exit()
+        # Refrescar pantalla
+        pygame.display.update()
+
+main_menu()
+
+#start()
