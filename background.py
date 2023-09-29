@@ -27,7 +27,7 @@ class Background:
         self.display.blit(text,rect)
 
     def moveBackground(self):
-        if self.posY<0:
+        if self.posY<-50:
             self.posY+=self.vel
         else:
             self.posY=self.posIn   

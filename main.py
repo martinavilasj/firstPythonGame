@@ -22,7 +22,7 @@ title = "Primer juego en python"
 inGame = False
 
 # Variables del entorno
-fondoImagen = "resources/bks/bk.png"
+fondoImagen = "resources/bks/bk-1.png"
 fondoPosVertical = -500
 fondoColor = (255,255,255)
 fuenteTexto = "resources/fonts/font.ttf"
@@ -31,16 +31,16 @@ fuenteTexto = "resources/fonts/font.ttf"
 playerVelocidad = 0 # Múltiplos de 10
 playerVelMovimiento = 10 
 playerVelDisparo = 20
-playerVidas = 5 
+playerVidas = 3 
 playerColor = "Red" # Red, Orange, Blue, Green
 
 # Variables de Enemigos
-enemigoVelMovimiento = 1
-enemigoVelDisparo = -10
+enemigoVelMovimiento = 0.5
+enemigoVelDisparo = -5
 enemigoVidas = 3
 
 # Variables de Asteroides
-asteroideVelMovimiento = 5
+asteroideVelMovimiento = 4
 asteroideVidas = 1
 
 # Sonidos
@@ -59,7 +59,7 @@ def start(playerColor):
     bk1 = bk.Background(fondoImagen,playerVelocidad,fondoPosVertical,fondoColor,display)
     s1 = sounds.Sound(sonidoDisparoPlayer,sonidoDisparoEnemigo,"","","","")
     p1 = ply.Player(playerVelMovimiento,playerVelDisparo,0,playerVidas,playerColor,width,height,bk1,s1)
-    lvl1= lvl.Level(0,3000,bk1)
+    lvl1= lvl.Level(0,3000,bk1,asteroideVelMovimiento,enemigoVelMovimiento,enemigoVelDisparo)
     listEnemies = []
     listAsteroids = []
     event = events.Event(width,height,p1)
@@ -67,7 +67,7 @@ def start(playerColor):
     pygame.display.set_caption(title)
 
     #
-    #
+    # CONTROL DE TIEMPO EN SEGUNDOS, PARA LA GENERACIÓN DE ASTEROIDES Y ENEMIGOS
     clock = pygame.time.Clock()
     second = round(pygame.time.get_ticks()/1000)
    # cont = 1
@@ -78,7 +78,7 @@ def start(playerColor):
 
     inGame = True
     while True:
-        ctrlAst = randint(1,9999) #Control de aparición de asteroides 
+        ctrlAst = randint(1,9999) #Control de aparición de asteroides y disparos enemigos
         bk1.drawBackground()
         bk1.moveBackground()
         
@@ -96,6 +96,7 @@ def start(playerColor):
         #
         #
 
+        # Control de niveles y vidas del jugador
         if p1.lifes <= 0:
             inGame = False
             p1.velX = 0
@@ -109,11 +110,12 @@ def start(playerColor):
         elif p1.points >= lvl1.pointForUpLevel:
             if contL > 5:
                 contL = 1
+            if len(listAsteroids) > 0 or len(listEnemies) > 0:
+                listEnemies.clear()
+                listAsteroids.clear()
             if contL % 5 == 0:
                 inGame = True
                 lvl1.upLevel()
-                listEnemies.clear()
-                listAsteroids.clear()
             else:
                 p1.velX = 0
                 lvl1.nextLevel()
@@ -140,10 +142,10 @@ def start(playerColor):
         #Cambiar CONT por Time
         if inGame:
             if ctrlAst % 90 == 0:
-                aste2 = ast.Asteroid(asteroideVelMovimiento,asteroideVidas,width,height,bk1,s1)
+                aste2 = ast.Asteroid(lvl1.velAst,asteroideVidas,width,height,bk1,s1)
                 listAsteroids.append(aste2)
             if cont % 7 == 0:
-                enmy = eny.Enemy(enemigoVelMovimiento,enemigoVelDisparo,enemigoVidas,width,height,bk1,s1)
+                enmy = eny.Enemy(lvl1.velEnm,lvl1.velDisEnm,enemigoVidas,width,height,bk1,s1)
                 listEnemies.append(enmy)
                 cont += 1
 
@@ -159,9 +161,10 @@ def start(playerColor):
                     p1.drawCollision()
                     listAsteroids.remove(a)
                 if a.lifes == 0:
+                    a.destroy()
                     listAsteroids.remove(a)
                     p1.points += 10
-                    a.destroy()
+                    
 
 
         if len(listEnemies)>0:
@@ -172,7 +175,7 @@ def start(playerColor):
                     e.velS = 0
                 else:
                     #Cambiar contS por Time
-                    if contS % 5 == 0:    
+                    if ctrlAst % 90 == 0:    
                         if len(e.listOfShoots) == 0:    
                             e.shoot()
                     event.evtShooting(e,p1)
