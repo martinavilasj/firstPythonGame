@@ -19,7 +19,7 @@ class Level:
         self.bk.drawText("resources/fonts/font.ttf","Nivel "+str(self.lvl),40,800/2,500/2)
 
     def upLevel(self):
-        self.pointForUpLevel += 500
+        self.pointForUpLevel += 1000
         self.lvl += 1
         self.bk.vel += 5
         self.bk.posY = 0

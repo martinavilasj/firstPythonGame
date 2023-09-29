@@ -3,25 +3,50 @@ import pygame, sys
 from pygame.locals import *
 
 class Event:
-    def __init__(self,width,height,player):
+    def __init__(self,evt):
+        #self.w = None
+        #self.h = None
+        #self.p = None
+        self.evt = evt
+
+    def evtGeneral(self):
+        for event in self.evt:
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+    
+    def evtInputText(self,input_text):
+        for event in self.evt:
+            if event.type == KEYDOWN:
+                if event.key == K_BACKSPACE:
+                    input_text = input_text[:-1]
+                else: input_text += event.unicode
+        return input_text
+
+    def evtInGame(self,width,height,player):
         self.w = width
         self.h = height
         self.p = player
-    
-    def evtKeyDown(self,evt):
-        if evt == K_LEFT:
+        for event in self.evt:
+            if event.type == KEYDOWN:
+                self.evtKeyDown(event)
+            if event.type == KEYUP:
+                self.evtKeyUp(event)
+
+    def evtKeyDown(self,event):
+        if event.key == K_LEFT:
             if self.p.posX >= 0:
                 self.p.velX = -(self.p.velM)
-        elif evt == K_RIGHT:
+        if event.key == K_RIGHT:
             if self.p.posX <= self.w:
                 self.p.velX = self.p.velM
-        elif evt == K_SPACE:
+        if event.key == K_SPACE:
             self.p.shoot()
     
-    def evtKeyUp(self,evt):
-        if evt == K_LEFT:
+    def evtKeyUp(self,event):
+        if event.key == K_LEFT:
             self.p.velX = 0
-        elif evt == K_RIGHT:
+        if event.key == K_RIGHT:
             self.p.velX = 0
     
     def evtShooting(self,pj,pj2):

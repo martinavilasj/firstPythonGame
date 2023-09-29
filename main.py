@@ -33,6 +33,7 @@ playerVelMovimiento = 10
 playerVelDisparo = 20
 playerVidas = 3 
 playerColor = "Red" # Red, Orange, Blue, Green
+playerName = "Juanito"
 
 # Variables de Enemigos
 enemigoVelMovimiento = 0.5
@@ -50,19 +51,21 @@ sonidoDisparoEnemigo = "resources/enemies/shootEn.ogg"
 # Sacando la variable display fuera de la función start
 display = pygame.display.set_mode((width,height))
 
+# Clase eventos
+event = events.Event('')
+
 ## IMPORTANTE siempre iniciar pygame antes de llamar cualquier función de este ##
 pygame.init()
 
-def start(playerColor):
+def start():
 
 
     bk1 = bk.Background(fondoImagen,playerVelocidad,fondoPosVertical,fondoColor,display)
     s1 = sounds.Sound(sonidoDisparoPlayer,sonidoDisparoEnemigo,"","","","")
-    p1 = ply.Player(playerVelMovimiento,playerVelDisparo,0,playerVidas,playerColor,width,height,bk1,s1)
+    p1 = ply.Player(playerVelMovimiento,playerVelDisparo,0,playerVidas,playerColor,width,height,bk1,s1,playerName)
     lvl1= lvl.Level(0,3000,bk1,asteroideVelMovimiento,enemigoVelMovimiento,enemigoVelDisparo)
     listEnemies = []
     listAsteroids = []
-    event = events.Event(width,height,p1)
     
     pygame.display.set_caption(title)
 
@@ -81,9 +84,12 @@ def start(playerColor):
         ctrlAst = randint(1,9999) #Control de aparición de asteroides y disparos enemigos
         bk1.drawBackground()
         bk1.moveBackground()
-        
-        #
-        #
+        # Control de eventos
+        event.evt = pygame.event.get()
+        event.evtGeneral()
+        if inGame:
+            event.evtInGame(width,height,p1)
+        # Control de tiempo
         time = round(pygame.time.get_ticks()/1000)
         clock.tick(60)
         if second == time:
@@ -91,11 +97,8 @@ def start(playerColor):
             contS = second
             second += 1
             contL += 1
-            #print(str(second))
-            #print(str(contL))
-        #
-        #
-
+        # Set player
+        p1.setPlayer()
         # Control de niveles y vidas del jugador
         if p1.lifes <= 0:
             inGame = False
@@ -119,25 +122,7 @@ def start(playerColor):
             else:
                 p1.velX = 0
                 lvl1.nextLevel()
-                inGame = False      
-
-        p1.drawPlayer()
-        p1.drawPlayerLife()
-        p1.drawPlayerPoints()
-
-        # Utilizar eventos predefinidos de pygame    
-        for evt in pygame.event.get():
-            # Cerrar ventana cuando el usuario clickee sobre la X
-            if evt.type == QUIT:
-                pygame.quit()
-                sys.exit()
-            
-            # FUNC Mover player cuando se presiona flecha izquierda o derecha
-            if inGame:
-                if evt.type == KEYDOWN:
-                    event.evtKeyDown(evt.key)
-                if evt.type == KEYUP:
-                    event.evtKeyUp(evt.key)
+                inGame = False
             
         #Cambiar CONT por Time
         if inGame:
@@ -201,10 +186,10 @@ def select_player():
     bk_select_menu = bk.Background(fondoImagen,playerVelocidad,fondoPosVertical,fondoColor,display)
 
     list_players = [
-        btn.Button(width*0.2,height/3,"playerRed",display),
-        btn.Button(width*0.4,height/3,"playerBlue",display),
-        btn.Button(width*0.6,height/3,"playerGreen",display),
-        btn.Button(width*0.8,height/3,"playerOrange",display)
+        btn.Button(width*0.2,height*0.2,"playerRed",display),
+        btn.Button(width*0.4,height*0.2,"playerBlue",display),
+        btn.Button(width*0.6,height*0.2,"playerGreen",display),
+        btn.Button(width*0.8,height*0.2,"playerOrange",display)
     ]
 
     start_button = btn.Button(width/2,height*0.8,"start",display)
@@ -214,9 +199,19 @@ def select_player():
         player.set_radio_buttons(list_players)
     list_players[0].clicked = True
 
+    global playerColor
+    global playerName
+    name_text = ''
     while run:
+        event.evt = pygame.event.get()
+        event.evtGeneral()
+
         bk_select_menu.drawBackground()
-        bk_select_menu.drawText(fuenteTexto,"Selecciona una nave",35,width/2,height*0.55)
+        bk_select_menu.drawText(fuenteTexto,"Selecciona una nave",35,width/2,height*0.4)
+        bk_select_menu.drawText(fuenteTexto,"Nombre:",30,width*0.2,height*0.6)
+
+        name_text = event.evtInputText(name_text)
+        bk_select_menu.drawInputText(fuenteTexto,name_text,25,width*0.32,height*0.6)
 
         for player in list_players:
             player.draw_image_button("resources/players/")
@@ -226,13 +221,11 @@ def select_player():
         
         if start_button.draw_text_button("START",fuenteTexto,40):
             print("La nave seleccionada fue: "+playerColor)
+            print("Nombre de jugador: "+name_text)
+            playerName = name_text
             run = False
-            start(playerColor)
-        for evt in pygame.event.get():
-            # Cerrar ventana cuando el usuario clickee sobre la X
-            if evt.type == QUIT:
-                pygame.quit()
-                sys.exit()
+            start()
+
         # Refrescar pantalla
         pygame.display.update()
 
@@ -253,6 +246,9 @@ def main_menu():
         # Dibujar fondo
         bk_menu.drawBackground()
 
+        event.evt = pygame.event.get()
+        event.evtGeneral()
+
         # Dibujar titulo del juego
         bk_menu.drawText(fuenteTexto,"JUEGUITO",70,width/2,height*0.2)
 
@@ -263,15 +259,8 @@ def main_menu():
         if quit_button.draw_text_button("QUIT",fuenteTexto,40):
             pygame.quit()
             sys.exit()
-        
-        for evt in pygame.event.get():
-            # Cerrar ventana cuando el usuario clickee sobre la X
-            if evt.type == QUIT:
-                pygame.quit()
-                sys.exit()
+
         # Refrescar pantalla
         pygame.display.update()
 
 main_menu()
-
-#start()

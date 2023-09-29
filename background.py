@@ -26,6 +26,14 @@ class Background:
         rect.centery = posTop
         self.display.blit(text,rect)
 
+    def drawInputText(self,font,text,size,posLeft,posTop):
+        self.font = pygame.font.Font(font,size) # font --> String para ruta de la fuente
+        text = self.font.render(text,0,(255,255,255))
+        rect = text.get_rect()
+        rect.centery = posTop
+        rect.left = posLeft
+        self.display.blit(text,rect)
+
     def moveBackground(self):
         if self.posY<-50:
             self.posY+=self.vel

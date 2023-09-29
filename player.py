@@ -4,7 +4,7 @@ from pygame.locals import *
 import background, beam
 
 class Player:
-    def __init__(self,velM,velS,velX,lifes,color,width,height,bk,sn):
+    def __init__(self,velM,velS,velX,lifes,color,width,height,bk,sn,name):
         self.velM = velM # velM --> entero para la velocidad del jugador al presionar teclas de movimiento
         self.velS = velS # velS --> entero para velocidad del disparo
         self.velX = velX # velX --> variable modificadora de velocidad para movimiento continuo
@@ -16,6 +16,7 @@ class Player:
         self.posY = height/1.10
         self.bk = bk
         self.sn = sn
+        self.name = name
         
         self.listOfShoots = []
         self.points = 0
@@ -39,6 +40,9 @@ class Player:
 
     def drawPlayerPoints(self):
         self.bk.drawText("resources/fonts/font.ttf",str(self.points),20,self.width/1.1,self.height/15)
+    
+    def drawPlayerName(self):
+        self.bk.drawText("resources/fonts/font.ttf",str(self.name),20,self.width/1.4,self.height/15)
 
     def drawPlayerLife(self):
         playerImgLife = pygame.image.load("resources/players/player"+self.color+"Life.png")
@@ -54,3 +58,9 @@ class Player:
         shoot = beam.Beam(self.posX,self.posY,self.velS,self.bk,"Player")
         self.listOfShoots.append(shoot)
         self.sn.soundShootPl()
+
+    def setPlayer(self):
+        self.drawPlayer()
+        self.drawPlayerLife()
+        self.drawPlayerPoints()
+        self.drawPlayerName()
