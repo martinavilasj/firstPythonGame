@@ -32,3 +32,6 @@ class Level:
     
     def winGame(self):
         self.bk.drawText("resources/fonts/font.ttf","Ganaste!",40,800/2,500/2)
+
+    def gameOver(self):
+        self.bk.drawText("resources/fonts/font.ttf","Perdiste perro",40,800/2,500/2)

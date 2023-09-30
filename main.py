@@ -14,6 +14,7 @@ import level as lvl
 from pygame.locals import *
 from random import *
 import button as btn
+import controller as ctrl
 
 # Variables Globales
 width = 800
@@ -69,118 +70,32 @@ def start():
     lvl1= lvl.Level(pointsForUpLevel,pointsForWin,bk1,asteroideVelMovimiento,enemigoVelMovimiento,enemigoVelDisparo)
     listEnemies = []
     listAsteroids = []
-    
-    control_start = True
+    controller = ctrl.Controller(p1,bk1,listAsteroids,listEnemies,event,lvl1,s1,width,height)
 
     pygame.display.set_caption(title)
 
-    #
-    # CONTROL DE TIEMPO EN SEGUNDOS, PARA LA GENERACIÓN DE ASTEROIDES Y ENEMIGOS
-    clock = pygame.time.Clock()
-    second = round(pygame.time.get_ticks()/1000)
-    contL = 0
-    cont = 0
-    #
-    #
+    controller.controlTime()
 
-    inGame = True
     while True:
-        ctrlAst = randint(1,9999) #Control de aparición de asteroides y disparos enemigos
         bk1.drawBackground()
         bk1.moveBackground()
         # Control de eventos
         event.evt = pygame.event.get()
         event.evtGeneral()
-        if inGame:
-            event.evtInGame(width,height,p1)
-        # Control de tiempo
-        time = round(pygame.time.get_ticks()/1000)
-        clock.tick(60)
-        if second == time:
-            cont = second
-            contS = second
-            second += 1
-            contL += 1
-        # Set player
-        p1.setPlayer()
-        # Control de niveles y vidas del jugador
-        if p1.lifes <= 0:
-            inGame = False
-            p1.velX = 0
-            bk1.vel = 0
-            bk1.drawText(fuenteTexto,"Game Over",40,width/2,height/2)
-        elif p1.points >= lvl1.pointForWin:
-            inGame = False
-            p1.velX = 0
-            bk1.vel = 0
-            lvl1.winGame()
-        elif p1.points >= lvl1.pointForUpLevel:
-            if len(listAsteroids) > 0 or len(listEnemies) > 0:
-                listEnemies.clear()
-                listAsteroids.clear()
-            lvl1.upLevel()
-            lvl1.nextLevel()
-            second += 3
-        elif p1.points == 0 and control_start:
-            lvl1.nextLevel()
-            second += 3
-            control_start = False
-            
-        # Cambiar CONT por Time
-        # Control de aparación de asteroides y enemigos
-        if inGame:  
-            #print(str(cont))
-            if ctrlAst % 90 == 0:
-                aste2 = ast.Asteroid(lvl1.velAst,asteroideVidas,width,height,bk1,s1)
-                listAsteroids.append(aste2)
-            if cont % 7 == 0:
-                enmy = eny.Enemy(lvl1.velEnm,lvl1.velDisEnm,enemigoVidas,width,height,bk1,s1)
-                listEnemies.append(enmy)
-                cont += 1
-
-        if len(listAsteroids)>0:
-            for a in listAsteroids:
-                if not inGame:
-                    a.velM = 0
-                a.drawAsteroid()
-                if a.rect.top > height+50:
-                    listAsteroids.remove(a)
-                if event.evtCollision(a.rect,p1.rect):
-                    p1.lifes -= 1
-                    p1.drawCollision()
-                    listAsteroids.remove(a)
-                if a.lifes == 0:
-                    a.destroy()
-                    listAsteroids.remove(a)
-                    p1.points += 10
-                    
-
-
-        if len(listEnemies)>0:
-            for e in listEnemies:
-                if not inGame:
-                    e.velM = 0
-                    e.velX = 0
-                    e.velS = 0
-                else:
-                    #Cambiar contS por Time
-                    if ctrlAst % 90 == 0:    
-                        if len(e.listOfShoots) == 0:    
-                            e.shoot()
-                    event.evtShooting(e,p1)
-                e.drawEnemy()
-                if e.rect.top > height+50:
-                    listEnemies.remove(e)
-                if e.lifes == 0:
-                    listEnemies.remove(e)
-                    p1.points += 100
-
-                if event.evtCollision(e.rect,p1.rect):
-                    e.enemyNum = 6
-                    p1.lifes -= 1
-                    p1.drawCollision()
-                    listEnemies.remove(e)
         
+        p1.setPlayer()
+
+        controller.control_lvl()
+        if controller.inGame:
+            event.evtInGame(width,height,p1)
+            controller.generate_asteroids(asteroideVidas)
+            controller.generate_enemies(enemigoVidas)
+        
+        controller.updateTime()
+
+        controller.control_asteroids()
+        controller.control_enemies()
+
         event.evtShootingPlayer(p1,listEnemies,listAsteroids)
 
         pygame.display.update()   
@@ -220,7 +135,7 @@ def select_player():
 
         # Llamar a evento para la inserción de caracteres en pantalla
         name_text = event.evtInputText(name_text)
-        bk_select_menu.drawInputText(fuenteTexto,name_text,25,width*0.32,height*0.6)
+        bk_select_menu.drawLeftText(fuenteTexto,name_text,25,width*0.32,height*0.6)
 
         # Dibujar todas las naves y detectar cual fue elegida
         for player in list_players:

@@ -42,7 +42,7 @@ class Player:
         self.bk.drawText("resources/fonts/font.ttf",str(self.points),20,self.width/1.1,self.height/15)
     
     def drawPlayerName(self):
-        self.bk.drawText("resources/fonts/font.ttf",str(self.name),20,self.width/1.4,self.height/15)
+        self.bk.drawRightText("resources/fonts/font.ttf",str(self.name),20,self.width/1.17,self.height/15)
 
     def drawPlayerLife(self):
         playerImgLife = pygame.image.load("resources/players/player"+self.color+"Life.png")
