@@ -20,7 +20,7 @@ class Controller:
         self.height = height
 
         self.second = 0
-        self.cont = 0
+        self.cont = 2
 
     def controlTime(self):
         self.clock = pygame.time.Clock()
@@ -64,8 +64,8 @@ class Controller:
             aste2 = ast.Asteroid(self.lvl.velAst,asteroideVidas,self.width,self.height,self.bk,self.s)
             self.lA.append(aste2)
     
-    def generate_enemies(self,enemigoVidas):
-        if self.cont % 7 == 0:
+    def generate_enemies(self,enemigoVidas,frecuenciaEnemigos):
+        if self.cont % frecuenciaEnemigos == 0:
             enmy = eny.Enemy(self.lvl.velEnm,self.lvl.velDisEnm,enemigoVidas,self.width,self.height,self.bk,self.s)
             self.lE.append(enmy)
             self.cont += 1

@@ -4,9 +4,6 @@ from pygame.locals import *
 
 class Event:
     def __init__(self,evt):
-        #self.w = None
-        #self.h = None
-        #self.p = None
         self.evt = evt
 
     def evtGeneral(self):
@@ -20,8 +17,17 @@ class Event:
             if event.type == KEYDOWN:
                 if event.key == K_BACKSPACE:
                     input_text = input_text[:-1]
+                elif event.key == K_RETURN:
+                    pass
                 else: input_text += event.unicode
         return input_text
+
+    def evtPressEnter(self):
+        for event in self.evt:
+            if event.type == KEYDOWN:
+                if event.key == K_RETURN:
+                    return True
+        return False
 
     def evtInGame(self,width,height,player):
         self.w = width

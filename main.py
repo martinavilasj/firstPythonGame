@@ -41,6 +41,7 @@ playerName = "Juanito"
 enemigoVelMovimiento = 1
 enemigoVelDisparo = -10
 enemigoVidas = 3
+frecuenciaEnemigos = 7
 
 # Variables de Asteroides
 asteroideVelMovimiento = 5
@@ -82,19 +83,21 @@ def start():
         # Control de eventos
         event.evt = pygame.event.get()
         event.evtGeneral()
-        
+
         p1.setPlayer()
 
         controller.control_lvl()
+        
         if controller.inGame:
             event.evtInGame(width,height,p1)
             controller.generate_asteroids(asteroideVidas)
-            controller.generate_enemies(enemigoVidas)
+            controller.generate_enemies(enemigoVidas,frecuenciaEnemigos)
         
         controller.updateTime()
 
         controller.control_asteroids()
         controller.control_enemies()
+
 
         event.evtShootingPlayer(p1,listEnemies,listAsteroids)
 
@@ -144,7 +147,7 @@ def select_player():
             if player.clicked:
                 playerColor = player.name.replace('player','')
         
-        if start_button.draw_text_button("START",fuenteTexto,40):
+        if start_button.draw_text_button("START",fuenteTexto,40) or event.evtPressEnter():
             playerName = name_text
             run = False
             start()
