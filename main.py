@@ -18,7 +18,8 @@ import button as btn
 # Variables Globales
 width = 800
 height = 500
-title = "Primer juego en python"
+title = "Primer juego en python" # Título de ventana
+gameTitle = "JUEGUITO" # Título del juego
 inGame = False
 
 # Variables del entorno
@@ -28,7 +29,7 @@ fondoColor = (255,255,255)
 fuenteTexto = "resources/fonts/font.ttf"
 
 # Variables del Jugador
-playerVelocidad = 0 # Múltiplos de 10
+playerVelocidad = 5 # Múltiplos de 10
 playerVelMovimiento = 10 
 playerVelDisparo = 20
 playerVidas = 3 
@@ -36,13 +37,17 @@ playerColor = "Red" # Red, Orange, Blue, Green
 playerName = "Juanito"
 
 # Variables de Enemigos
-enemigoVelMovimiento = 0.5
-enemigoVelDisparo = -5
+enemigoVelMovimiento = 1
+enemigoVelDisparo = -10
 enemigoVidas = 3
 
 # Variables de Asteroides
-asteroideVelMovimiento = 4
+asteroideVelMovimiento = 5
 asteroideVidas = 1
+
+# Variables de control
+pointsForUpLevel = 1000
+pointsForWin = 3000
 
 # Sonidos
 sonidoDisparoPlayer = "resources/players/shoot.ogg"
@@ -58,24 +63,23 @@ event = events.Event('')
 pygame.init()
 
 def start():
-
-
     bk1 = bk.Background(fondoImagen,playerVelocidad,fondoPosVertical,fondoColor,display)
     s1 = sounds.Sound(sonidoDisparoPlayer,sonidoDisparoEnemigo,"","","","")
     p1 = ply.Player(playerVelMovimiento,playerVelDisparo,0,playerVidas,playerColor,width,height,bk1,s1,playerName)
-    lvl1= lvl.Level(0,3000,bk1,asteroideVelMovimiento,enemigoVelMovimiento,enemigoVelDisparo)
+    lvl1= lvl.Level(pointsForUpLevel,pointsForWin,bk1,asteroideVelMovimiento,enemigoVelMovimiento,enemigoVelDisparo)
     listEnemies = []
     listAsteroids = []
     
+    control_start = True
+
     pygame.display.set_caption(title)
 
     #
     # CONTROL DE TIEMPO EN SEGUNDOS, PARA LA GENERACIÓN DE ASTEROIDES Y ENEMIGOS
     clock = pygame.time.Clock()
     second = round(pygame.time.get_ticks()/1000)
-   # cont = 1
-    #contS = 1
-    contL = second
+    contL = 0
+    cont = 0
     #
     #
 
@@ -111,21 +115,21 @@ def start():
             bk1.vel = 0
             lvl1.winGame()
         elif p1.points >= lvl1.pointForUpLevel:
-            if contL > 5:
-                contL = 1
             if len(listAsteroids) > 0 or len(listEnemies) > 0:
                 listEnemies.clear()
                 listAsteroids.clear()
-            if contL % 5 == 0:
-                inGame = True
-                lvl1.upLevel()
-            else:
-                p1.velX = 0
-                lvl1.nextLevel()
-                inGame = False
+            lvl1.upLevel()
+            lvl1.nextLevel()
+            second += 3
+        elif p1.points == 0 and control_start:
+            lvl1.nextLevel()
+            second += 3
+            control_start = False
             
-        #Cambiar CONT por Time
-        if inGame:
+        # Cambiar CONT por Time
+        # Control de aparación de asteroides y enemigos
+        if inGame:  
+            #print(str(cont))
             if ctrlAst % 90 == 0:
                 aste2 = ast.Asteroid(lvl1.velAst,asteroideVidas,width,height,bk1,s1)
                 listAsteroids.append(aste2)
@@ -185,6 +189,7 @@ def select_player():
     run = True
     bk_select_menu = bk.Background(fondoImagen,playerVelocidad,fondoPosVertical,fondoColor,display)
 
+    # Crear lista de naves a elegir
     list_players = [
         btn.Button(width*0.2,height*0.2,"playerRed",display),
         btn.Button(width*0.4,height*0.2,"playerBlue",display),
@@ -194,13 +199,16 @@ def select_player():
 
     start_button = btn.Button(width/2,height*0.8,"start",display)
     
-
+    # Crear lista de naves en cada objeto particular
     for player in list_players:
         player.set_radio_buttons(list_players)
+    # Seleccionar primer nave por defecto
     list_players[0].clicked = True
 
+    # Usar global para cambiar el valor de la variable para todas las funciones
     global playerColor
     global playerName
+
     name_text = ''
     while run:
         event.evt = pygame.event.get()
@@ -210,9 +218,11 @@ def select_player():
         bk_select_menu.drawText(fuenteTexto,"Selecciona una nave",35,width/2,height*0.4)
         bk_select_menu.drawText(fuenteTexto,"Nombre:",30,width*0.2,height*0.6)
 
+        # Llamar a evento para la inserción de caracteres en pantalla
         name_text = event.evtInputText(name_text)
         bk_select_menu.drawInputText(fuenteTexto,name_text,25,width*0.32,height*0.6)
 
+        # Dibujar todas las naves y detectar cual fue elegida
         for player in list_players:
             player.draw_image_button("resources/players/")
             player.update_select()
@@ -220,8 +230,6 @@ def select_player():
                 playerColor = player.name.replace('player','')
         
         if start_button.draw_text_button("START",fuenteTexto,40):
-            print("La nave seleccionada fue: "+playerColor)
-            print("Nombre de jugador: "+name_text)
             playerName = name_text
             run = False
             start()
@@ -250,7 +258,7 @@ def main_menu():
         event.evtGeneral()
 
         # Dibujar titulo del juego
-        bk_menu.drawText(fuenteTexto,"JUEGUITO",70,width/2,height*0.2)
+        bk_menu.drawText(fuenteTexto,gameTitle,70,width/2,height*0.2)
 
         # Dibujar botones
         if start_button.draw_text_button("START",fuenteTexto,40):

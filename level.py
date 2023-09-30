@@ -2,6 +2,7 @@
 
 import background
 import player
+import pygame
 
 class Level:
     def __init__(self,pointForUpLevel,pointForWin,bk,velAst,velEnm,velDisEnm):
@@ -17,6 +18,8 @@ class Level:
     
     def nextLevel(self):
         self.bk.drawText("resources/fonts/font.ttf","Nivel "+str(self.lvl),40,800/2,500/2)
+        pygame.display.update()
+        pygame.time.delay(3000)
 
     def upLevel(self):
         self.pointForUpLevel += 1000
