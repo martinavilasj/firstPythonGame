@@ -12,7 +12,6 @@ import asteroid as ast
 import sounds
 import level as lvl
 from pygame.locals import *
-from random import *
 import button as btn
 import controller as ctrl
 
@@ -32,7 +31,7 @@ fuenteTexto = "resources/fonts/font.ttf"
 # Variables del Jugador
 playerVelocidad = 5 # Múltiplos de 10
 playerVelMovimiento = 10 
-playerVelDisparo = 20
+playerVelDisparo = 10
 playerVidas = 3 
 playerColor = "Red" # Red, Orange, Blue, Green
 playerName = "Juanito"
@@ -42,6 +41,7 @@ enemigoVelMovimiento = 1
 enemigoVelDisparo = -10
 enemigoVidas = 3
 frecuenciaEnemigos = 7
+frecuenciaPowerUps = 10
 
 # Variables de Asteroides
 asteroideVelMovimiento = 5
@@ -87,21 +87,29 @@ def start():
         p1.setPlayer()
 
         controller.control_lvl()
-        
+            
         if controller.inGame:
             event.evtInGame(width,height,p1)
             controller.generate_asteroids(asteroideVidas)
             controller.generate_enemies(enemigoVidas,frecuenciaEnemigos)
+            controller.generate_powerups(frecuenciaPowerUps)
+        else:
+            if event.evtPressEscape():
+                break
         
         controller.updateTime()
+        controller.control_timer()
 
         controller.control_asteroids()
         controller.control_enemies()
+        controller.control_powerups()
 
 
         event.evtShootingPlayer(p1,listEnemies,listAsteroids)
 
-        pygame.display.update()   
+        pygame.display.update()
+    
+    main_menu()   
 
 def select_player():
     run = True

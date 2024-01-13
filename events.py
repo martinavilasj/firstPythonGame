@@ -28,6 +28,13 @@ class Event:
                 if event.key == K_RETURN:
                     return True
         return False
+    
+    def evtPressEscape(self):
+        for event in self.evt:
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    return True
+        return False
 
     def evtInGame(self,width,height,player):
         self.w = width
@@ -78,11 +85,11 @@ class Event:
                 s.trajectory()
                 for a in listAst:
                     if self.evtCollision(a.rect,s.rect):
-                        a.lifes -= 1
+                        a.lifes -= pj.damage
                         #pj.listOfShoots.remove(s)
                 for e in listEn:
                     if self.evtCollision(e.rect,s.rect):
-                        e.lifes -= 1
+                        e.lifes -= pj.damage
                         pj.points += 20
                         pj.listOfShoots.remove(s)
                 if s.rect.top < -100:

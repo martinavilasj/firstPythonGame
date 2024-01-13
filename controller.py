@@ -3,6 +3,7 @@ import pygame
 from random import *
 import enemy as eny
 import asteroid as ast
+import powerups as pw
 
 class Controller:
     def __init__(self,player,background,listAsteroids,listEnemies,event,level,sound,width,height):
@@ -11,8 +12,16 @@ class Controller:
 
         self.p = player
         self.bk = background
+
+        # Lista Asteroides
         self.lA = listAsteroids
+        # Lista Enemigos
         self.lE = listEnemies
+        # Lista Powerups
+        self.lP = []
+        # Lista PowerUps obtenidos
+        self.lPO = []
+
         self.evt = event
         self.lvl = level
         self.s = sound
@@ -69,6 +78,13 @@ class Controller:
             enmy = eny.Enemy(self.lvl.velEnm,self.lvl.velDisEnm,enemigoVidas,self.width,self.height,self.bk,self.s)
             self.lE.append(enmy)
             self.cont += 1
+    
+    def generate_powerups(self,frecuenciaPowerUps):
+        ctrlAst = randint(1,9999)
+        if ctrlAst % 999 == 0:
+            powerup = pw.Powerup(self.width,self.height,5)
+            self.lP.append(powerup)
+            self.cont += 1
 
     def control_asteroids(self):
         if len(self.lA)>0:
@@ -82,7 +98,7 @@ class Controller:
                     self.p.lifes -= 1
                     self.p.drawCollision()
                     self.lA.remove(a)
-                if a.lifes == 0:
+                if a.lifes <= 0:
                     a.destroy()
                     self.lA.remove(a)
                     self.p.points += 10
@@ -103,7 +119,7 @@ class Controller:
                 e.drawEnemy()
                 if e.rect.top > self.height+50:
                     self.lE.remove(e)
-                if e.lifes == 0:
+                if e.lifes <= 0:
                     self.lE.remove(e)
                     self.p.points += 100
 
@@ -112,3 +128,27 @@ class Controller:
                     self.p.lifes -= 1
                     self.p.drawCollision()
                     self.lE.remove(e)
+    
+    def control_powerups(self):
+        if len(self.lP)>0:
+            for p in self.lP:
+                if not self.inGame:
+                    p.vel = 0
+                else:
+                    p.draw_powerup(self.bk)
+
+                if p.rect.top > self.height+50:
+                    self.lP.remove(p)
+                
+                if self.evt.evtCollision(p.rect,self.p.rect):
+                    p.set_powerup(self.p)
+                    p.set_timer(self.second,15)
+                    self.lPO.append(p)
+                    self.lP.remove(p)
+    
+    def control_timer(self):
+        if len(self.lPO) > 0:
+            for p in self.lPO:
+                if self.second - p.timer["time_start"] == p.timer["time_stop"]:
+                    p.unset_powerup(self.p)
+                    self.lPO.remove(p)

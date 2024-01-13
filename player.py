@@ -17,6 +17,10 @@ class Player:
         self.bk = bk
         self.sn = sn
         self.name = name
+
+        # agregando powerup de daño
+        self.damage = 1
+        self.powered = False
         
         self.listOfShoots = []
         self.points = 0
