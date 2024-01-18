@@ -35,7 +35,8 @@ class Enemy:
         return randint(1,4)
     
     def shoot(self):
-        shoot = beam.Beam(self.posX,self.posY,self.velS,self.bk,"Enemy")
+        shoot_img = pygame.image.load("resources/beam/fireEnemy.png")
+        shoot = beam.Beam(self.posX,self.posY,self.velS,self.bk,shoot_img,"Enemy")
         self.listOfShoots.append(shoot)
         self.sn.soundShootEn()
 

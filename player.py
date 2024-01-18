@@ -18,9 +18,15 @@ class Player:
         self.sn = sn
         self.name = name
 
+        # agregando cambio de imagen de disparo
+        self.shoot_img = ''
+        self.shoot_img_normal = pygame.image.load("resources/beam/firePlayer.png")
+        self.shoot_img_powered = pygame.image.load("resources/beam/firePlayerPowered.png")
+
         # agregando powerup de daño
         self.damage = 1
         self.powered = False
+        self.pw_velocity = False
         
         self.listOfShoots = []
         self.points = 0
@@ -53,13 +59,44 @@ class Player:
         self.bk.drawObjet(playerImgLife,(self.width/40,self.height/25))
         self.bk.drawText("resources/fonts/font.ttf",str(self.lifes),20,self.width/10,self.height/15)
     
+    def drawPowerUps(self):
+        posicion = {'p1': '', 'p2': ''}
+        if self.powered:
+            if not posicion['p1'] or posicion['p1'] == 'power':
+                posicion['p1'] = 'power'
+            elif not posicion['p2']:
+                posicion['p2'] = 'power'
+        
+        if self.pw_velocity:
+            if not posicion['p1'] or posicion['p1'] == 'veldisparo':
+                posicion['p1'] = 'veldisparo'
+            elif not posicion['p2']:
+                posicion['p2'] = 'veldisparo'
+
+        if not posicion['p1'] and posicion['p2']:
+            posicion['p1'] = posicion['p2']
+            posicion['p2'] = ''
+        
+        if posicion['p1']:
+            img = pygame.image.load(f"resources/powerups/{posicion['p1']}_mini.png")
+            self.bk.drawObjet(img,(self.width/8,self.height/25))
+        if posicion['p2']:
+            img = pygame.image.load(f"resources/powerups/{posicion['p2']}_mini.png")
+            self.bk.drawObjet(img,(self.width/6,self.height/25))
+        
     def drawCollision(self):
         coll = pygame.image.load("resources/players/coll.png")
         self.bk.drawObjet(coll,self.rect)
         self.sn.playSound("resources/players/damage.ogg")
     
     def shoot(self):
-        shoot = beam.Beam(self.posX,self.posY,self.velS,self.bk,"Player")
+        if self.powered:
+            self.shoot_img = self.shoot_img_powered
+        else:
+            self.shoot_img = self.shoot_img_normal
+        
+        shoot = beam.Beam(self.posX,self.posY,self.velS,self.bk,self.shoot_img,"Player")
+        shoot.rect.top -= 70
         self.listOfShoots.append(shoot)
         self.sn.soundShootPl()
 
@@ -68,3 +105,4 @@ class Player:
         self.drawPlayerLife()
         self.drawPlayerPoints()
         self.drawPlayerName()
+        self.drawPowerUps()

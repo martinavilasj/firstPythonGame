@@ -38,8 +38,9 @@ class Powerup:
     def set_powerup(self, player):
         if self.powerup == "vida":
             player.lifes += 1
-        elif self.powerup == "veldisparo":
+        elif self.powerup == "veldisparo" and not player.pw_velocity:
             player.velS += 10
+            player.pw_velocity = True
         elif self.powerup == "power":
             player.damage = 3
             player.powered = True
@@ -47,6 +48,7 @@ class Powerup:
     def unset_powerup(self, player):
         if self.powerup == 'veldisparo':
             player.velS -= 10
+            player.pw_velocity = False
         elif self.powerup == 'power':
             player.damage = 1
             player.powered = False

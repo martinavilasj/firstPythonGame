@@ -3,9 +3,9 @@ from pygame.locals import *
 import background
 
 class Beam:
-    def __init__(self,posX,posY,vel,bk,pj):
+    def __init__(self,posX,posY,vel,bk,image,pj):
         self.pj = pj
-        self.image = pygame.image.load("resources/beam/fire"+self.pj+".png")
+        self.image = image
         self.rect = self.image.get_rect()
         self.rect.left = posX
         self.rect.top = posY
