@@ -81,7 +81,7 @@ class Controller:
     
     def generate_powerups(self,frecuenciaPowerUps):
         ctrlAst = randint(1,9999)
-        if ctrlAst % 85 == 0:
+        if ctrlAst % 999 == 0:
             powerup = pw.Powerup(self.width,self.height,5)
             self.lP.append(powerup)
 
