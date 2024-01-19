@@ -3,7 +3,7 @@
 # Importar al principio las librerias 
 # pygame contiene las librerias para crear videojuegos
 # sys nos sirve para manejar las ventanas del sistema operativo
-# random es una libreria que nos permite crear número aleatorios
+# random es una libreria que nos permite crear número aleatorios.
 import pygame, sys, events
 import player as ply
 import background as bk
