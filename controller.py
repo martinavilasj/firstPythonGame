@@ -53,6 +53,8 @@ class Controller:
             if len(self.lA) > 0 or len(self.lE) > 0:
                 self.lE.clear()
                 self.lA.clear()
+            self.lP.clear()
+            self.p.listOfShoots.clear()
             self.lvl.upLevel()
             self.lvl.nextLevel()
             self.second += 3
@@ -119,6 +121,7 @@ class Controller:
                 if e.rect.top > self.height+50:
                     self.lE.remove(e)
                 if e.lifes <= 0:
+                    e.destroy()
                     self.lE.remove(e)
                     self.p.points += 100
 
@@ -140,6 +143,7 @@ class Controller:
                     self.lP.remove(p)
                 
                 if self.evt.evtCollision(p.rect,self.p.rect):
+                    self.s.playSound("resources/powerups/power_up.ogg")
                     p.set_powerup(self.p)
                     p.set_timer(self.second,15)
                     self.lPO.append(p)

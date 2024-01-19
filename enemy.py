@@ -47,3 +47,17 @@ class Enemy:
             if self.posX <= 0 or self.posX > self.width:
                 self.velX = -(self.velX)
             self.posX += self.velX
+    
+    def getDamage(self,pj,beam):
+        self.sn.playSound("resources/enemies/damageEn.ogg")
+        self.lifes -= pj.damage
+
+        img = pygame.image.load("resources/beam/damageEnemy.png")
+        rect = img.get_rect()
+        rect.left = beam.rect.left
+        rect.top = self.posY
+
+        self.bk.drawObjet(img,rect)
+    
+    def destroy(self):
+        self.sn.playSound("resources/enemies/explosion.ogg")

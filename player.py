@@ -98,7 +98,10 @@ class Player:
         shoot = beam.Beam(self.posX,self.posY,self.velS,self.bk,self.shoot_img,"Player")
         shoot.rect.top -= 70
         self.listOfShoots.append(shoot)
-        self.sn.soundShootPl()
+        if self.powered:
+            self.sn.playSound("resources/players/shoot_pw.ogg")
+        else:
+            self.sn.soundShootPl()
 
     def setPlayer(self):
         self.drawPlayer()

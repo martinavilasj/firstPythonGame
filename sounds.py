@@ -11,6 +11,11 @@ class Sound:
         self.sWin = sWin
         self.sExp = sExp
 
+        # Keydown sound
+        self.sKD = pygame.mixer.Sound("resources/sounds/beep_01.ogg")
+        # Enter sound
+        self.sEnter = pygame.mixer.Sound("resources/sounds/beep_02.ogg")
+
         self.soundSPLy = pygame.mixer.Sound(self.sPly)
         self.soundSEn = pygame.mixer.Sound(self.sEn)
         
@@ -23,3 +28,9 @@ class Sound:
     def playSound(self,sn):
         sound = pygame.mixer.Sound(sn)
         sound.play()
+
+    def playInputText(self):
+        self.sKD.play()
+
+    def playEnterKey(self):
+        self.sEnter.play()

@@ -17,4 +17,4 @@ class Beam:
 
     def trajectory(self):
         self.rect.top -= self.vel
-        
+

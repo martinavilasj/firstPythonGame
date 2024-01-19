@@ -3,8 +3,9 @@ import pygame, sys
 from pygame.locals import *
 
 class Event:
-    def __init__(self,evt):
+    def __init__(self,evt,sounds):
         self.evt = evt
+        self.sound = sounds
 
     def evtGeneral(self):
         for event in self.evt:
@@ -18,8 +19,10 @@ class Event:
                 if event.key == K_BACKSPACE:
                     input_text = input_text[:-1]
                 elif event.key == K_RETURN:
-                    pass
-                else: input_text += event.unicode
+                    self.sound.playEnterKey()
+                else: 
+                    input_text += event.unicode
+                    self.sound.playInputText()
         return input_text
 
     def evtPressEnter(self):
@@ -89,7 +92,7 @@ class Event:
                         #pj.listOfShoots.remove(s)
                 for e in listEn:
                     if self.evtCollision(e.rect,s.rect):
-                        e.lifes -= pj.damage
+                        e.getDamage(pj,s)
                         pj.points += 20
                         pj.listOfShoots.remove(s)
                 if s.rect.top < -100:

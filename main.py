@@ -55,18 +55,20 @@ pointsForWin = 3000
 sonidoDisparoPlayer = "resources/players/shoot.ogg"
 sonidoDisparoEnemigo = "resources/enemies/shootEn.ogg"
 
-# Sacando la variable display fuera de la función start
-display = pygame.display.set_mode((width,height))
-
-# Clase eventos
-event = events.Event('')
-
 ## IMPORTANTE siempre iniciar pygame antes de llamar cualquier función de este ##
 pygame.init()
 
+# Sacando la variable display fuera de la función start
+display = pygame.display.set_mode((width,height))
+
+# Clase sonidos
+s1 = sounds.Sound(sonidoDisparoPlayer,sonidoDisparoEnemigo,"","","","")
+
+# Clase eventos
+event = events.Event('',s1)
+
 def start():
     bk1 = bk.Background(fondoImagen,playerVelocidad,fondoPosVertical,fondoColor,display)
-    s1 = sounds.Sound(sonidoDisparoPlayer,sonidoDisparoEnemigo,"","","","")
     p1 = ply.Player(playerVelMovimiento,playerVelDisparo,0,playerVidas,playerColor,width,height,bk1,s1,playerName)
     lvl1= lvl.Level(pointsForUpLevel,pointsForWin,bk1,asteroideVelMovimiento,enemigoVelMovimiento,enemigoVelDisparo)
     listEnemies = []
