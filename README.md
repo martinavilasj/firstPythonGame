@@ -11,10 +11,11 @@ $ python3.7 main.py
 ### Controls
 
 - Move
-![right-left.png]()
+
+![right-left.png](https://github.com/martinavilasj/firstPythonGame/blob/eade0dd198bd329d346a3f52593ebcdd9c3d5df7/resources/others/right-left.png)
 
 - Shot
-![space.png]()
+![space.png](https://github.com/martinavilasj/firstPythonGame/blob/eade0dd198bd329d346a3f52593ebcdd9c3d5df7/resources/others/space.png)
 
 
 ### Resources
