@@ -4,6 +4,7 @@
 # pygame contiene las librerias para crear videojuegos
 # sys nos sirve para manejar las ventanas del sistema operativo
 # random es una libreria que nos permite crear número aleatorios.
+import asyncio
 import pygame, sys, events
 import player as ply
 import background as bk
@@ -67,7 +68,7 @@ s1 = sounds.Sound(sonidoDisparoPlayer,sonidoDisparoEnemigo,"","","","")
 # Clase eventos
 event = events.Event('',s1)
 
-def start():
+async def start():
     bk1 = bk.Background(fondoImagen,playerVelocidad,fondoPosVertical,fondoColor,display)
     p1 = ply.Player(playerVelMovimiento,playerVelDisparo,0,playerVidas,playerColor,width,height,bk1,s1,playerName)
     lvl1= lvl.Level(pointsForUpLevel,pointsForWin,bk1,asteroideVelMovimiento,enemigoVelMovimiento,enemigoVelDisparo)
@@ -110,10 +111,12 @@ def start():
         event.evtShootingPlayer(p1,listEnemies,listAsteroids)
 
         pygame.display.update()
-    
-    main_menu()   
 
-def select_player():
+        await asyncio.sleep(0)
+    
+    asyncio.run( main() )   
+
+async def select_player():
     run = True
     bk_select_menu = bk.Background(fondoImagen,playerVelocidad,fondoPosVertical,fondoColor,display)
 
@@ -160,13 +163,15 @@ def select_player():
         if start_button.draw_text_button("START",fuenteTexto,40) or event.evtPressEnter():
             playerName = name_text
             run = False
-            start()
+            asyncio.run( start() )
 
         # Refrescar pantalla
         pygame.display.update()
+        
+        await asyncio.sleep(0)
 
 
-def main_menu():
+async def main():
     run = True
     # Fondo del menu, igual que en el juego pero sin movimiento
     bk_menu = bk.Background(fondoImagen,playerVelocidad,fondoPosVertical,fondoColor,display)
@@ -189,9 +194,9 @@ def main_menu():
         bk_menu.drawText(fuenteTexto,gameTitle,70,width/2,height*0.2)
 
         # Dibujar botones
-        if start_button.draw_text_button("START",fuenteTexto,40):
+        if start_button.draw_text_button("START",fuenteTexto,40) or event.evtPressEnter():
             run = False
-            select_player()
+            asyncio.run( select_player() )
         if quit_button.draw_text_button("QUIT",fuenteTexto,40):
             pygame.quit()
             sys.exit()
@@ -199,4 +204,6 @@ def main_menu():
         # Refrescar pantalla
         pygame.display.update()
 
-main_menu()
+        await asyncio.sleep(0)
+
+asyncio.run( main() )
