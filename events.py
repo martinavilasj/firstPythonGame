@@ -20,9 +20,10 @@ class Event:
                     input_text = input_text[:-1]
                 elif event.key == K_RETURN:
                     self.sound.playEnterKey()
-                else: 
-                    input_text += event.unicode
-                    self.sound.playInputText()
+                else:
+                    if len(input_text) < 12:
+                        input_text += event.unicode
+                        self.sound.playInputText()
         return input_text
 
     def evtPressEnter(self):
